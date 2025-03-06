@@ -1,36 +1,45 @@
-# README #
+🏗️ LETI-SIDIS - Microservices Refactoring
 
+📌 Descrição do Projeto
 
-## Running multiple instances ##
+O LETI-SIDIS é um projeto desenvolvido no âmbito da unidade curricular Sistemas Distribuídos e Integração de Sistemas (SIDIS) do curso de Licenciatura em Engenharia de Telecomunicações e Informática (LETI) no Instituto Superior de Engenharia do Porto (ISEP).
 
-Predefined run configurations are provided under /sidis-1211091-1211064/.run
-These include two instances of each module (UsersAPI, SubsAPI and PlansAPI) as required by the project.
+Este projeto teve como principal objetivo a refatoração de um sistema monolítico previamente desenvolvido na cadeira de PSoft (Programação de Software) e sua transição para uma arquitetura baseada em microserviços, promovendo maior escalabilidade, modularidade e eficiência na gestão de subscrições.
 
-#
+🎯 Objetivo
 
-To change or define more instances do the following:
+Migrar a aplicação monolítica desenvolvida em PSoft para uma arquitetura distribuída de microserviços.
 
+Melhorar a escalabilidade e a manutenibilidade do sistema.
 
+Implementar comunicação entre serviços de forma eficiente e segura.
 
-Open IntelliJ's 'Run/Debug Configurations', select a configuration 
-(or create a new one with one of the modules if none exists),
-go to 'Modify options' and do the following:
-* Override configuration properties:
-  * Name: spring.data.source.url, Value: <<your_db_location>>
-* Allow multiple instances
-* Add VM options
-  * -Dserver.port=<<port_number>>
+Utilizar tecnologias modernas para a integração e gestão dos serviços distribuídos.
 
+🛠 Tecnologias Utilizadas
 
-### Ports to use ###
+Java + Spring Boot → Desenvolvimento dos microserviços.
 
-The ports for each instance should be defined in the .env ait the project root
-and must coincide with the ones used in the run configuration for each instance.
+Spring Cloud → Comunicação e configuração dos serviços.
 
-## Databases ##
-Databases must use H2 Driver 1.4.200 to run correctly.
+Docker + Docker Compose → Containerização dos serviços.
 
-Databases can not be shared between instances or modules. Each instance must run its own database.
+Kafka / RabbitMQ → Mensageria para comunicação assíncrona entre microserviços.
 
-### Bootstrapping ###
-You may find a 'Bootstrap.sql' file under each module's resources folder.
+PostgreSQL / MongoDB → Persistência de dados.
+
+OAuth 2.0 / Keycloak → Gestão de autenticação e autorização.
+
+Swagger → Documentação das APIs.
+
+🚀 Funcionalidades Principais
+
+Gestão de Subscrições: Criação, edição e cancelamento de subscrições de utilizadores.
+
+Gestão de Planos: Administração de diferentes tipos de planos disponíveis para subscrição.
+
+Autenticação e Autorização: Implementação de um sistema seguro baseado em OAuth 2.0.
+
+Comunicação Assíncrona: Utilização de Kafka para garantir a integração eficiente entre serviços.
+
+Monitorização e Logging: Implementação de logs centralizados e métricas de desempenho.
