@@ -1,0 +1,32 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title Get plan's details Sequence Diagram
+
+autoactivate on
+autonumber
+
+actor "User" as User
+participant ":SubscriptionController" as Ctrl
+participant "service:SubscriptionService" as ServiceSubscription
+participant "repo:SubscriptionRepository" as SubRepo
+participant "planDetailsRepository:PlanDetailsRepository" as planDetailsRepo
+participant ":MessageBroker" as MB
+
+activate User
+
+User -> Ctrl: GET /api/subscriptions/:subscriptionId/plan
+    Ctrl -> ServiceSubscription: getAssociatedPlanDetails(subscriptionId)
+    ServiceSubscription -> SubRepo: findById(subscriptionId)
+    SubRepo --> ServiceSubscription: subscription
+        ServiceSubscription -> planDetailsRepo:fetchAssociatedPlanDetails(subscription.getPlanName())
+       planDetailsRepo --> ServiceSubscription: planDetails
+       ServiceSubscription -->Ctrl : planDetails
+       Ctrl -> MB: publishPlanCHanged(subscription)
+       MB -> : notify(subscription, plan.changed)
+       deactivate MB
+       deactivate MB
+       Ctrl --> User: 200 Ok
+
+
+@enduml

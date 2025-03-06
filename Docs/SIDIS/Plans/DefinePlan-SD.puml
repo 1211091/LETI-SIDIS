@@ -1,0 +1,36 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title Define a new plan Sequence Diagram
+
+autoactivate on
+autonumber
+
+actor "User" as User
+participant ":PlanController" as Ctrl
+participant "planService:PlanService" as Svc
+participant "planEditMapper:EditPlanMapper" as EditPlanMapper
+participant "repository:PlanRepository" as planRepo
+participant "AmqpSender" as Sender
+
+activate User
+
+User -> Ctrl: POST /api/plans
+Ctrl -> Svc: createPlan(resource)
+Svc -> EditPlanMapper: create(resource)
+EditPlanMapper --> Svc: plan
+activate Svc
+Svc -> planRepo: save(plan)
+deactivate Svc
+planRepo --> Svc: plan
+activate Svc
+activate Ctrl
+Svc --> Ctrl : plan
+deactivate Ctrl
+Ctrl -> Sender: sendPlanUpdated(plan)
+
+Sender -> : convertAndSend(topic,createdKey,plan)
+Ctrl --> User: 201 Created
+
+
+@enduml

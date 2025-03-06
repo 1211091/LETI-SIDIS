@@ -1,0 +1,34 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title Update plan´s details Sequence Diagram
+
+autoactivate on
+autonumber
+
+actor "User" as User
+participant ":PlanController" as Ctrl
+participant "planService:PlanService" as Svc
+participant "plan:Plan" as plan
+participant "repository:PlanRepository" as planRepo
+participant "AmqpSender" as Sender
+
+activate User
+
+User -> Ctrl: PATCH/api/plans/:planName
+Ctrl -> Svc: update(planName, resource)
+Svc -> planRepo:findByPlanName(planName)
+    planRepo --> Svc: plan
+    activate Svc
+    Svc -> plan**: update(numberOfMinutes,planDescription,maxUsers,musicCollections,musicSuggestions,isActive,isPromoted, isArchive)
+    Svc -> planRepo: save(plan)
+    planRepo --> Svc: plan
+    activate Svc
+    Svc --> Ctrl : plan
+    deactivate Svc
+    activate Ctrl
+    Ctrl -> Sender: sendPlanUpdated(plan)
+    deactivate Ctrl
+    Sender -> : convertAndSend(topic,createdKey,plan
+    Ctrl --> User: 200 Ok
+@enduml

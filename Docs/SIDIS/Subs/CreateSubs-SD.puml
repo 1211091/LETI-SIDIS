@@ -1,0 +1,33 @@
+@startuml
+title Create Subscription Sequence Diagram
+
+actor "User" as User
+participant ":SubscriptionController" as Ctrl
+participant ":ServiceSubscription" as ServiceSubscription
+participant ":SubscriptionRepository" as SubRepo
+participant ":Subscription" as sub
+
+autoactivate on
+User -> Ctrl: POST /api/subscriptions/create
+Ctrl -> ServiceSubscription: createSubscription(request, resource)
+ServiceSubscription -> SubRepo: findAll()
+SubRepo --> ServiceSubscription: subscriptions
+loop for (Subscription subscription : subscriptions)
+    alt if (subscription.getUserId() != resource.getUserId() )
+
+    ServiceSubscription -> EditSubMapper: create(resource)
+    EditSubMapper --> ServiceSubscription: subscription
+    ServiceSubscription -> sub**: subscription.startSubscription();
+    ServiceSubscription -> SubRepo: save(subscription)
+    SubRepo --> ServiceSubscription: subscription
+    ServiceSubscription --> Ctrl: subscription
+    Ctrl -> MB: publishSubscriptionCreated(subscription)
+    MB -> : notify(subscription, subscription.created)
+    deactivate MB
+    deactivate MB
+    Ctrl --> User: 200 Ok
+    end
+end
+
+
+@enduml

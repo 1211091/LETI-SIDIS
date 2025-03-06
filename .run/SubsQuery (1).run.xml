@@ -1,0 +1,22 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="SubsQuery (1)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" singleton="false">
+    <additionalParameters>
+      <param>
+        <option name="enabled" value="true" />
+        <option name="name" value="spring.datasource.url" />
+        <option name="value" value="jdbc:h2:file:./src/main/resources/db/subsQueryDatabase" />
+      </param>
+    </additionalParameters>
+    <module name="SubsQuery" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="leti.sidis.subs.query.SubsQuery" />
+    <option name="VM_PARAMETERS" value="-Dserver.port=7081" />
+    <extension name="software.aws.toolkits.jetbrains.core.execution.JavaAwsConnectionExtension">
+      <option name="credential" />
+      <option name="region" />
+      <option name="useCurrentConnection" value="false" />
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

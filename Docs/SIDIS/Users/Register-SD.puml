@@ -1,0 +1,33 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title Register Sequence Diagram
+
+autoactivate on
+autonumber
+
+actor "User" as User
+participant ":AuthApi" as Ctrl
+participant "user:User" as usr
+participant "service:UserService" as ServiceUser
+participant ":repo:UserRepository" as userRepo
+participant "mapper:EditUserMapper" as userMapper
+participant "viewMapper:UserViewMapper" as viewMapper
+participant "user:User" as usr
+activate User
+
+User -> Ctrl: POST /api/public/register
+    Ctrl -> ServiceUser: create(request)
+    alt if (userRepo.findByUsername(request.getUsername()).isEmpty())
+    ServiceUser -> userMapper: create (request)
+    userMapper --> ServiceUser
+    ServiceUser -> usr**: setPassword(passwordEncoder.encode(request.getPassword()))
+    ServiceUser -> userRepo: save(user)
+    userRepo --> ServiceUser: user
+    ServiceUser -> viewMapper: toUserView(user)
+    viewMapper --> ServiceUser: user
+    ServiceUser --> Ctrl: user
+    end
+Ctrl --> User: 200 OK
+
+@enduml

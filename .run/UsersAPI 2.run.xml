@@ -1,0 +1,22 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="UsersAPI 2" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <additionalParameters>
+      <param>
+        <option name="enabled" value="true" />
+        <option name="name" value="spring.datasource.url" />
+        <option name="value" value="jdbc:h2:file:./UsersAPI/src/main/resources/db/usersDatabase2" />
+      </param>
+    </additionalParameters>
+    <module name="UsersCommand" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="leti.sidis.UsersCommand" />
+    <option name="VM_PARAMETERS" value="-Dserver.port=8081" />
+    <extension name="software.aws.toolkits.jetbrains.core.execution.JavaAwsConnectionExtension">
+      <option name="credential" />
+      <option name="region" />
+      <option name="useCurrentConnection" value="false" />
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

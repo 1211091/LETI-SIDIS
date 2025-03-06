@@ -1,0 +1,25 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title Register System Sequence Diagram
+
+autoactivate on
+autonumber
+
+actor "User" as User
+participant ":UsersCommand" as System
+participant "MB: Message Broker" as MB
+participant ":UsersCommand2" as System2
+
+
+activate User
+
+User -> System: POST/api/public/register
+System -> System: save(user)
+deactivate System
+System -> MB: sendUserCreated(user)
+MB -> System2: notify(user)
+System2 -> System2: save(user)
+deactivate System2
+System --> User: 201 Created
+@enduml

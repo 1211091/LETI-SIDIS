@@ -1,0 +1,43 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title Change Subscription Plan System Sequence Diagram
+
+autoactivate on
+autonumber
+
+participant "ClientHttp" as User
+participant ":SubsAPI" as System
+participant ":PlansAPI" as PlansAPI
+participant ":MessageBroker" as MB
+participant ":SubsAPI2" as System2
+
+
+
+activate User
+
+User -> System: PATCH /api/subscriptions/:subscriptionId/changePlan
+System -> System: findBySubscriptionId(subscriptionId)
+deactivate System
+alt if (local subscriptions.isPresent() && subscription.isActive())
+    System -> PlansAPI: findPlan(newPlan)
+    PlansAPI --> System: plan
+    alt if (plan.isActive())
+        System ->System: subscription.setPlan(newPlan)
+        deactivate System
+        System -> System: save(subscription)
+    end
+    System -> MB: publishSubscriptionCreated(subscription)
+    deactivate System
+    MB -> System2: notify(subscription, subscription.created)
+    deactivate MB
+    System2 -> System2:save((subscription)
+    deactivate System2
+    deactivate System2
+    System --> User: 200 ok
+
+
+        end
+
+
+@enduml

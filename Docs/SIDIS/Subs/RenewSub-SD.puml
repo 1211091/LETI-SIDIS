@@ -1,0 +1,46 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title Renew Subscription Sequence Diagram
+
+autoactivate on
+autonumber
+
+actor "User" as User
+participant ":SubscriptionController" as Ctrl
+participant "service:SubscriptionService" as ServiceSubscription
+participant "repo:SubscriptionRepository" as SubRepo
+participant ":MessageBroker" as MB
+
+activate User
+
+User -> Ctrl: PATCH /api/subscriptions/:subscriptionId/renew
+Ctrl -> ServiceSubscription: renewSubscription(subscriptionId)
+ServiceSubscription -> SubRepo: findById(subscriptionId)
+SubRepo --> ServiceSubscription: subscription
+alt if (subscription.isPresent())
+    ServiceSubscription -> ServiceSubscription: getPaymentFrequency()
+    deactivate ServiceSubscription
+    alt if (paymentFrequency.equals("Monthly"))
+     ServiceSubscription -> ServiceSubscription:setLastRenovationDate(LocalDate.now())
+     deactivate ServiceSubscription
+        alt if (!subscription.get().isActive()) {
+         ServiceSubscription -> ServiceSubscription: setActive(true)
+         deactivate ServiceSubscription
+         ServiceSubscription -> SubRepo: save (subscription)
+         SubRepo --> ServiceSubscription: subscription
+         activate Ctrl
+         ServiceSubscription --> Ctrl: subscription
+        Ctrl -> MB: publishSubscriptionRenewed(subscription)
+        deactivate Ctrl
+        MB -> : notify(subscription, subscription.renewed)
+        deactivate MB
+        deactivate MB
+        Ctrl --> User: 200 Ok
+         end
+
+
+end
+
+
+@enduml

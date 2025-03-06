@@ -1,0 +1,35 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title Update Details System Sequence Diagram
+
+autoactivate on
+autonumber
+
+
+participant "ClientHTTP" as User
+participant ":PlansCommand" as System
+participant "MB: Message Broker" as MB
+participant ":PlansCommand2" as API2
+participant ":PlansQuery" as Query
+participant ":PlansQuery2" as Query2
+
+activate User
+
+User -> System: PATCH /api/plans/:planName
+System -> System: findAll()
+    System -> System: update(plan)
+    System ->System: save(plan)
+    System -> MB: sendPlanUpdated(plan)
+    deactivate System
+    MB -> API2: notify(plan)
+    API2 -> API2: save(plan)
+    MB -> Query: notify(plan)
+    Query -> Query: save(plan)
+    MB -> Query2: notify(plan)
+
+    Query2 -> Query2: save(plan)
+    System --> User: 200 Ok
+    deactivate System
+
+@enduml

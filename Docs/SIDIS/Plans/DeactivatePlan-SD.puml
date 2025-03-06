@@ -1,0 +1,45 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title Deactivate a plan Sequence Diagram
+autoactivate on
+autonumber
+
+actor "User" as User
+participant "PlanController" as Controller
+participant "PlanService" as Service
+participant "PlanRepositoryHTTP" as HttpRepo
+participant "PlanRepository" as PlanRepo
+participant "Plan" as Plan
+participant "AmqpSender" as Sender
+
+
+activate User
+
+User -> Controller: PATCH /api/plans/:planName/cease
+
+Controller -> Service: cease(planName)
+Service -> HttpRepo: findSubscriptionsWithPlan(planName)
+activate Service
+HttpRepo --> Service: subscriptions
+deactivate Service
+loop for each subscription in subscriptions
+    alt if (subscription.get("planName").equals(planName))
+        Service -> PlanRepo: findByPlanName(planName)
+        PlanRepo --> Service: plan
+        activate Service
+        Service -> Plan**: setActive(false)
+        deactivate Service
+        Service -> PlanRepo: save(plan)
+        activate Service
+        PlanRepo --> Service: OK
+        deactivate Service
+        Service --> Controller: OK
+        Controller -> Sender: sendPlanUpdated(plan)
+        Sender -> : convertAndSend(topic,createdKey,plan)
+        deactivate Sender
+        Controller --> User: 200 OK
+    end
+end
+
+@enduml

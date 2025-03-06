@@ -1,0 +1,38 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title Switch plan Sequence Diagram
+
+autoactivate on
+autonumber
+
+actor "User" as User
+participant ":SubscriptionController" as Ctrl
+participant "service:SubscriptionService" as ServiceSubscription
+participant "repo:SubscriptionRepository" as SubRepo
+participant "repo:SubscriptionRepositoryHTTP" as SubRepoHTTP
+participant ":MessageBroker" as MB
+
+activate User
+
+User -> Ctrl: PATCH/api/subscriptions/:subscriptionId/changePlan
+    Ctrl -> ServiceSubscription: changePlan(subscriptionId, requestBody)
+    ServiceSubscription -> SubRepo: findById(subscriptionId)
+    SubRepo --> ServiceSubscription: subscription
+    alt if (subscription.isPresent() && subscription.isActive()))
+        ServiceSubscription -> SubRepo: findById(planName)
+        SubRepo --> ServiceSubscription: plan
+        alt if (plan.isPresent && plan.isActive)
+            ServiceSubscription -> ServiceSubscription: setPlanName(newPlan)
+            ServiceSubscription -> SubRepo: save(subscription.get)
+            SubRepo --> ServiceSubscription: subscription
+            ServiceSubscription --> Ctrl: subscription
+            end
+        Ctrl -> MB: publishSubscriptionCreated(subscription)
+        MB -> : notify(subscription, plan.changed)
+        deactivate MB
+        deactivate MB
+        Ctrl --> User: 200 Ok
+    end
+
+@enduml

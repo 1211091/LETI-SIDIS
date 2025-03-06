@@ -1,0 +1,1 @@
+INSERT INTO PLANS (NAME, IS_ACTIVE) VALUES ('Free', true), ('Silver', true), ('Gold', true);

@@ -1,0 +1,27 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title Login Sequence Diagram
+
+autoactivate on
+autonumber
+
+actor "User" as User
+participant ":AuthApi" as Ctrl
+participant "service:UserService" as ServiceUser
+participant ":repo:UserRepository" as userRepo
+participant "mapper:UserViewMapper" as viewMapper
+
+
+activate User
+
+User -> Ctrl: POST/api/public/login
+    Ctrl -> ServiceUser: authenticate(request)
+    ServiceUser -> userRepo: findByUsername(request.getUsername())
+    userRepo --> ServiceUser: user
+    ServiceUser -> viewMapper: toUserView(user)
+    viewMapper --> ServiceUser: user
+    ServiceUser --> Ctrl: user
+Ctrl --> User: 200 ok
+
+@enduml

@@ -1,0 +1,35 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title Bootstrap Sequence Diagram
+
+
+autoactivate on
+autonumber
+
+participant ":System" as System
+participant ":MessageBroker" as MB
+participant ":Bootstrap" as Bootstrap
+
+
+-> System: API instance is started
+System -> MB: bootstrap()
+MB -> Bootstrap: getData()
+Bootstrap --> MB: data
+MB --> System: data
+System -> System: save(data)
+deactivate System
+System -> MB: register()
+
+
+...
+
+-> System: HTTP request
+System -> System: process(request)
+deactivate System
+System -> MB: publish(event)
+MB -> Bootstrap: notify(event)
+Bootstrap -> Bootstrap: save()
+
+
+@enduml

@@ -1,0 +1,58 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title Define a Bonus Plan System Sequence Diagram
+
+autoactivate on
+autonumber
+
+
+participant "ClientHTTP" as User
+participant ":PlansCommand" as System
+participant "MB: Message Broker" as MB
+participant ":SubsCommand" as Subs
+participant ":PlansCommand2" as API2
+participant ":PlansQuery" as Query
+participant ":PlansQuery2" as Query2
+
+
+activate User
+
+User -> System: POST /api/plans/{userId}
+System -> System: findAll()
+alt if (localplan.isEmpty())
+    System -> System: create(plan)
+    System -> System: save(plan)
+    System -> MB: sendAskCreatePlanBonus(userId,PlanName)
+    deactivate System
+    MB -> Subs: notify(userId,PlanName)
+    Subs -> Subs: verify NonBonusActiveSubs(userId)
+    Subs -> Subs: verify BonusActiveSubs(userId)
+    Subs --> MB: true
+    MB --> System: true
+    System -> MB: sendPlanUpdated(plan)
+    deactivate System
+    MB -> API2: notify(plan)
+    API2 -> API2: save(plan)
+    deactivate API2
+    MB -> Query: notify(plan)
+    Query -> Query: save(plan)
+    deactivate Query
+    MB -> Query2: notify(plan)
+    Query2 -> Query2: save(plan)
+    deactivate Query2
+    System --> User: 201 Created
+    deactivate System
+    deactivate API2
+    deactivate System
+    deactivate User
+    deactivate MB
+    deactivate Query
+    deactivate Query2
+end
+    deactivate System
+
+
+
+
+@enduml

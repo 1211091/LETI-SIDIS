@@ -1,0 +1,34 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title Renew a Subscription System Sequence Diagram
+
+autoactivate on
+autonumber
+
+participant "ClientHttp" as User
+participant ":SubsAPI" as SubsAPI
+
+
+
+
+activate User
+
+User -> SubsAPI: PATCH /api/subscriptions/:subscriptionId/renew
+SubsAPI -> SubsAPI: find(subscription)
+deactivate SubsAPI
+alt if (local subscriptions.isPresent())
+    SubsAPI -> SubsAPI: setLastRenovationDate(LocalDate.now)
+    deactivate SubsAPI
+    SubsAPI -> SubsAPI: save(subscription))
+    SubsAPI -> MB: publishSubscriptionCreated(subscription)
+    MB -> SubsAPI2: notify(subscription, subscription.created)
+    deactivate MB
+    SubsAPI2 -> SubsAPI2:save((subscription)
+    deactivate SubsAPI2
+    SubsAPI --> User: 200 ok
+deactivate SubsAPI
+end
+
+
+@enduml

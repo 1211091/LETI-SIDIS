@@ -1,0 +1,30 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title Get plan's details System Sequence Diagram
+
+autoactivate on
+autonumber
+
+participant "ClientHttp" as User
+participant ":SubsAPI" as SubsAPI
+participant ":PlansRepository" as PlansRepository
+participant ":MessageBroker" as MB
+participant ":SubsAPI2" as SubsAPI2
+
+activate User
+
+User -> SubsAPI: GET/api/subscriptions/:subscriptionId/plan
+SubsAPI -> SubsAPI: findSubscription(subscriptionId)
+deactivate SubsAPI
+    SubsAPI -> PlansRepository: findPlan(subscription.getPlanName())
+    PlansRepository --> SubsAPI: planDetails
+    SubsAPI -> MB: publishSubscriptionCreated(subscription)
+    MB -> SubsAPI2: notify(subscription, subscription.created)
+    deactivate MB
+    SubsAPI2 -> SubsAPI2:save(subscription)
+    deactivate SubsAPI2
+    SubsAPI --> User: 200 ok
+deactivate SubsAPI
+
+@enduml

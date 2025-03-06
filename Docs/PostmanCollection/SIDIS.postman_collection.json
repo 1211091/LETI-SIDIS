@@ -1,0 +1,428 @@
+{
+	"info": {
+		"_postman_id": "55af1a5c-8e8f-4f50-9dcb-d5b6273f995d",
+		"name": "SIDIS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27792010",
+		"_collection_link": "https://crimson-shuttle-445887.postman.co/workspace/New-Team-Workspace~043c9227-04aa-45d4-bde6-730ce23fcc23/collection/27792010-55af1a5c-8e8f-4f50-9dcb-d5b6273f995d?action=share&source=collection_link&creator=27792010"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"user3@email.com\",\r\n    \"fullName\":\"Carlos Smith\",\r\n    \"password\":\"password\",\r\n    \"rePassword\":\"password\",\r\n    \"authorities\":[\"NEW_CUSTOMER\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{usersAPI}}{{baseUrl}}/public/register",
+							"host": [
+								"{{usersAPI}}{{baseUrl}}"
+							],
+							"path": [
+								"public",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Authtenticates\", function(){\r",
+									"\r",
+									"    pm.response.to.have.status(200);\r",
+									"\r",
+									"    let token = postman.getResponseHeader(\"Authorization\");\r",
+									"    pm.environment.set(\"token\", token);    \r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"user2@email.com\",\r\n    \"password\":\"password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{usersAPI}}{{baseUrl}}/public/login",
+							"host": [
+								"{{usersAPI}}{{baseUrl}}"
+							],
+							"path": [
+								"public",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Subscriptions",
+			"item": [
+				{
+					"name": "Create Subscription",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"planName\": \"Gold\",\r\n    \"paymentFrequency\": \"Annually\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{subsAPI}}{{baseUrl}}/subscriptions",
+							"host": [
+								"{{subsAPI}}{{baseUrl}}"
+							],
+							"path": [
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "All Subscriptions",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{subsAPI}}{{baseUrl}}/subscriptions",
+							"host": [
+								"{{subsAPI}}{{baseUrl}}"
+							],
+							"path": [
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscription by Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{subsAPI}}{{baseUrl}}/subscriptions/:id",
+							"host": [
+								"{{subsAPI}}{{baseUrl}}"
+							],
+							"path": [
+								"subscriptions",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "8ffb4e56-822c-486b-b41f-6cca3e32cde1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Associated plan's details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{subsAPI}}{{baseUrl}}/subscriptions/:subscriptionId/plan",
+							"host": [
+								"{{subsAPI}}{{baseUrl}}"
+							],
+							"path": [
+								"subscriptions",
+								":subscriptionId",
+								"plan"
+							],
+							"variable": [
+								{
+									"key": "subscriptionId",
+									"value": "5a0f8b68-8c3d-42e1-ae71-f61dfb99559d"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Renew a subscription",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{subsAPI}}{{baseUrl}}/subscriptions/:subscriptionId/renew",
+							"host": [
+								"{{subsAPI}}{{baseUrl}}"
+							],
+							"path": [
+								"subscriptions",
+								":subscriptionId",
+								"renew"
+							],
+							"variable": [
+								{
+									"key": "subscriptionId",
+									"value": "3d1f52cf-3a8b-4686-9e3f-786b739b6d7d"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change plan",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"planName\": \"Gold\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{subsAPI}}{{baseUrl}}/subscriptions/:subscriptionId/changePlan",
+							"host": [
+								"{{subsAPI}}{{baseUrl}}"
+							],
+							"path": [
+								"subscriptions",
+								":subscriptionId",
+								"changePlan"
+							],
+							"variable": [
+								{
+									"key": "subscriptionId",
+									"value": "a6b7e88b-8656-49ef-8f32-4f92f165b9e9"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel subscription",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{subsAPI}}{{baseUrl}}/subscriptions/:subscriptionId",
+							"host": [
+								"{{subsAPI}}{{baseUrl}}"
+							],
+							"path": [
+								"subscriptions",
+								":subscriptionId"
+							],
+							"variable": [
+								{
+									"key": "subscriptionId",
+									"value": "22ac0d2d-1e26-465f-a95c-50b3123ac5f9"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "PlansAPI",
+			"item": [
+				{
+					"name": "Create a Plan",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"planName\": \"Test\",\r\n\"numberOfMinutes\": \"55000\",\r\n\"planDescription\": \"test plan\",\r\n\"maxUsers\": 3,\r\n\"musicCollections\": 2,\r\n\"musicSuggestions\": \"test\",\r\n\"monthlyFee\": 3.99, \r\n\"annualFee\": 50.99,\r\n\"isActive\": false,\r\n\"isPromoted\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{plansAPI}}{{baseUrl}}/plans",
+							"host": [
+								"{{plansAPI}}{{baseUrl}}"
+							],
+							"path": [
+								"plans"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "All Plans",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{plansAPI}}{{baseUrl}}/plans",
+							"host": [
+								"{{plansAPI}}{{baseUrl}}"
+							],
+							"path": [
+								"plans"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Plan by name",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{plansAPI2}}{{baseUrl}}/plans/:planName",
+							"host": [
+								"{{plansAPI2}}{{baseUrl}}"
+							],
+							"path": [
+								"plans",
+								":planName"
+							],
+							"variable": [
+								{
+									"key": "planName",
+									"value": "Free"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Plan",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"isActive\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{plansAPI}}{{baseUrl}}/plans/:planName",
+							"host": [
+								"{{plansAPI}}{{baseUrl}}"
+							],
+							"path": [
+								"plans",
+								":planName"
+							],
+							"variable": [
+								{
+									"key": "planName",
+									"value": "Silver"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deactivate Plan",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{plansAPI}}{{baseUrl}}/plans/:planName/cease",
+							"host": [
+								"{{plansAPI}}{{baseUrl}}"
+							],
+							"path": [
+								"plans",
+								":planName",
+								"cease"
+							],
+							"variable": [
+								{
+									"key": "planName",
+									"value": "Test Plan"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

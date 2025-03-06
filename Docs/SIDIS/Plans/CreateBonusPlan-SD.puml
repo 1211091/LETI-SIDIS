@@ -1,0 +1,45 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title Define a new Bonus plan Sequence Diagram
+
+autoactivate on
+autonumber
+
+actor "User" as User
+participant ":PlanController" as Ctrl
+participant "planService:PlanService" as Svc
+participant "planEditMapper:EditPlanMapper" as EditPlanMapper
+participant "repository:PlanRepository" as planRepo
+participant "AmqpSender" as Sender
+participant "SubsCommand" as Subs
+
+activate User
+
+User -> Ctrl: POST /api/plans/{userId}
+Ctrl -> Svc: createPlanBonus(resource, userId)
+Svc -> Svc: new Plan(resource)
+deactivate Svc
+Svc -> planRepo: save(plan)
+planRepo --> Svc: plan
+...
+Svc -> Sender: sendAskCreatePlanBonus(userId,PlanName)
+
+Svc --> Ctrl : plan
+
+Sender -> Subs: convertSendAndReceive(exchange.getName(), bonusPlanKey, rpcRequest);
+...
+
+Subs -> Subs: verify NonBonusActiveSubs(userId)
+Subs -> Subs: verify BonusActiveSubs(userId)
+activate Svc
+Subs --> Sender: true
+Sender --> Svc: true
+...
+Svc -> Sender: sendPlanCreated(plan)
+Svc --> Ctrl: plan
+Ctrl --> User: 201 Created
+Sender -> : convertAndSend(topic,createdKey,plan);
+
+
+@enduml

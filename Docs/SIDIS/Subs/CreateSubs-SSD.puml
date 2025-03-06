@@ -1,0 +1,35 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title Subscribe to a plan System Sequence Diagram
+
+autoactivate on
+autonumber
+
+participant "ClientHttp" as User
+participant ":SubsAPI" as SubsAPI
+participant ":MessageBroker" as MB
+participant ":SubsAPI2" as SubsAPI2
+
+activate User
+
+User -> SubsAPI: POST /api/subscriptions/create
+SubsAPI -> SubsAPI: findAll()
+deactivate SubsAPI
+loop (foreach subscription : subscriptions)
+    alt if (subscription.getUserId != request.userId
+    SubsAPI ->SubsAPI: create(sub)
+    deactivate SubsAPI
+    SubsAPI ->SubsAPI: save(sub)
+    deactivate SubsAPI
+    SubsAPI -> MB: publishSubscriptionCreated(subscription)
+    MB -> SubsAPI2: notify(subscription, subscription.created)
+    deactivate MB
+    SubsAPI2 -> SubsAPI2:save((subscription)
+    deactivate SubsAPI2
+    SubsAPI --> User: 201 created
+    deactivate User
+    deactivate SubsAPI
+    end
+end
+@enduml

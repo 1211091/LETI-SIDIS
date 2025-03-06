@@ -1,0 +1,48 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title Deactivate a Plan  Sequence Diagram
+
+
+autoactivate on
+autonumber
+
+
+participant "ClientHTTP" as User
+participant ":PlansCommand" as API
+participant ":PlansCommand2" as API2
+participant ":PlansQuery" as Query
+participant ":PlansQuery2" as Query2
+participant "MB: Message Broker" as MB
+
+
+activate User
+
+User -> API: PATCH /api/plans/:planName/cease
+API -> API: check local plans
+deactivate API
+    API -> API: plan.setActive(false)
+    deactivate API
+
+    API -> API: save(plan)
+    deactivate API
+
+    API -> MB: sendPlanUpdated(plan)
+    API --> User: 200 Ok
+    ...
+    MB -> API2: notify(plan)
+    API2 -> API2: save(plan)
+    deactivate API2
+    MB -> Query: notify(plan)
+    Query -> Query: save(plan)
+    deactivate Query
+    MB -> Query2: notify(plan)
+    Query2 -> Query2: save(plan)
+    deactivate Query2
+    deactivate MB
+
+    deactivate API
+    deactivate User
+    deactivate API
+
+@enduml

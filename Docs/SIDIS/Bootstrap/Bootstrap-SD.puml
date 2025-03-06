@@ -1,0 +1,48 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title Bootstrap Sequence Diagram
+
+autoactivate on
+autonumber
+
+participant "System:ApiInstance" as System
+participant ":ApiController" as Ctrl
+participant ":ApiService" as Svc
+participant ":ApiRepository" as Repo
+participant "AmqpSender" as Sender
+participant ":MessageBroker" as MB
+participant ":Bootstrap" as Bootstrap
+
+
+
+participant "planEditMapper:EditPlanMapper" as EditPlanMapper
+
+
+-> System: API instance started
+
+System -> Sender: bootstrap()
+Sender -> MB: bootstrap()
+MB -> Bootstrap: bootstrap()
+Bootstrap --> MB: convertAndSend(bootstrapData)
+MB --> Sender: bootstrapData
+Sender -> Repo: save(bootstrapData)
+Repo --> Sender
+Sender -> MB: register()
+
+...
+-> Ctrl: HTTTP request
+Ctrl -> Svc: process(request)
+Svc -> Repo: save()
+Repo --> Svc:
+Svc -> MB: publish(event)
+...
+MB -> Bootstrap:notify(event)
+...
+MB -> System2:ApiInstance: notify(event)
+
+
+
+
+
+@enduml

@@ -1,0 +1,30 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title List of Plans Sequence Diagram
+
+autoactivate on
+autonumber
+
+actor "User" as User
+participant ":PlanController" as Ctrl
+
+participant "planService:PlanService" as Svc
+participant "repository:PlanRepository" as planRepo
+
+activate User
+
+
+User -> Ctrl: GET /api/plans
+Ctrl -> Svc: findAll()
+Svc -> planRepo: findAll()
+planRepo --> Svc: localPlans
+deactivate Svc
+deactivate Svc
+Svc --> Ctrl: localPlans
+
+Ctrl --> User: 200 OK
+
+@enduml
+
+
